@@ -74,6 +74,12 @@ Parameters:
       - "yes"
       - "no"
     Default: "no"
+  AWSManagedRulesCoreRuleSetEnabled:
+    Type: String
+    AllowedValues:
+      - "yes"
+      - "no"
+    Default: "no"
 
   DefaultActionAllowEnabled:
     Type: String
@@ -148,6 +154,12 @@ Parameters:
       - "yes"
       - "no"
     Default: "yes"
+  OverrideActionCountCoreRuleSetEnabled:
+    Type: String
+    AllowedValues:
+      - "yes"
+      - "no"
+    Default: "yes"
 
   CommonRuleSetExcludedRules:
     Type: String
@@ -182,6 +194,9 @@ Parameters:
   RulesAnonymousIpListExcludedRules:
     Type: String
     Default: ""
+  CoreRuleSetExcludedRules:
+    Type: String
+    Default: ""
 
 Conditions:
   IsAWSManagedRulesCommonRuleSetEnabled: !Equals [ !Ref AWSManagedRulesCommonRuleSetEnabled , "yes" ]
@@ -195,6 +210,7 @@ Conditions:
   IsAWSManagedRulesWordPressRuleSetEnabled: !Equals [ !Ref AWSManagedRulesWordPressRuleSetEnabled , "yes" ]
   IsAWSManagedRulesAmazonIpReputationListEnabled: !Equals [ !Ref AWSManagedRulesAmazonIpReputationListEnabled , "yes" ]
   IsAWSManagedRulesAnonymousIpListEnabled: !Equals [ !Ref AWSManagedRulesAnonymousIpListEnabled , "yes" ]
+  IsAWSManagedRulesCoreRuleSetEnabled: !Equals [ !Ref AWSManagedRulesCoreRuleSetEnabled , "yes" ]
 
   IsDefaultActionAllowEnabled: !Equals [ !Ref DefaultActionAllowEnabled , "yes" ]
 
@@ -209,6 +225,7 @@ Conditions:
   IsOverrideActionCountWordPressRuleSetEnabled: !Equals [ !Ref OverrideActionCountWordPressRuleSetEnabled, "yes" ]
   IsOverrideActionCountAmazonIpReputationListEnabled: !Equals [ !Ref OverrideActionCountAmazonIpReputationListEnabled, "yes" ]
   IsOverrideActionCountAnonymousIpListEnabled: !Equals [ !Ref OverrideActionCountAnonymousIpListEnabled, "yes" ]
+  IsOverrideActionCountCoreRuleSetEnabled: !Equals [ !Ref OverrideActionCountCoreRuleSetEnabled, "yes" ]
 
   IsCommonRuleSetExcludedRules: !Equals [ !Ref CommonRuleSetExcludedRules, "" ]
   IsAdminProtectionRuleSetExcludedRules: !Equals [ !Ref AdminProtectionRuleSetExcludedRules, "" ]
@@ -221,6 +238,7 @@ Conditions:
   IsWordPressRuleSetExcludedRules: !Equals [ !Ref WordPressRuleSetExcludedRules, "" ]
   IsAmazonIpReputationListExcludedRules: !Equals [ !Ref AmazonIpReputationListExcludedRules, "" ]
   IsRulesAnonymousIpListExcludedRules: !Equals [ !Ref RulesAnonymousIpListExcludedRules, "" ]
+  IsCoreRuleSetExcludedRules: !Equals [ !Ref CoreRuleSetExcludedRules, "" ]
 
   IsAlbArnProvided: !Not [!Equals [ !Ref AlbArn, "no" ]]
 
@@ -503,6 +521,30 @@ Resources:
                     - IsRulesAnonymousIpListExcludedRules
                     - []
                     - 'Fn::Split': [ ",", !Ref RulesAnonymousIpListExcludedRules ]
+          - !Ref 'AWS::NoValue'
+        - Fn::If:
+          - IsAWSManagedRulesCoreRuleSetEnabled
+          -
+            Name: AWSManagedRulesCoreRuleSet
+            Priority: 11
+            OverrideAction:
+              'Fn::If':
+                - IsOverrideActionCountCoreRuleSetEnabled
+                - Count: {}
+                - None: {}
+            VisibilityConfig:
+              SampledRequestsEnabled: true
+              CloudWatchMetricsEnabled: true
+              MetricName: !Sub "${NamePrefix}-WAFCoreRuleSetMetric"
+            Statement:
+              ManagedRuleGroupStatement:
+                VendorName: AWS
+                Name: AWSManagedRulesCoreRuleSet
+                ExcludedRules:
+                  'Fn::If':
+                    - IsRulesCoreRuleSetExcludedRules
+                    - []
+                    - 'Fn::Split': [ ",", !Ref RulesCoreRuleSetExcludedRules ]
           - !Ref 'AWS::NoValue'
 
   WAFWebACLAssociation:

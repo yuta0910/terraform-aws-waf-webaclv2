@@ -23,6 +23,7 @@ resource "aws_cloudformation_stack" "waf" {
     AWSManagedRulesWordPressRuleSetEnabled       = var.enable_WordPressRuleSet ? "yes" : "no"
     AWSManagedRulesAmazonIpReputationListEnabled = var.enable_AmazonIpReputationList ? "yes" : "no"
     AWSManagedRulesAnonymousIpListEnabled        = var.enable_AnonymousIpList ? "yes" : "no"
+    AWSManagedRulesCoreRuleSetEnabled            = var.enable_CoreRuleSet ? "yes" : "no"
 
     OverrideActionCountCommonRuleSetEnabled          = var.enable_OverrideActionCountCommonRuleSet ? "yes" : "no"
     OverrideActionCountAdminProtectionRuleSetEnabled = var.enable_OverrideActionCountAdminProtectionRuleSet ? "yes" : "no"
@@ -35,6 +36,7 @@ resource "aws_cloudformation_stack" "waf" {
     OverrideActionCountWordPressRuleSetEnabled       = var.enable_OverrideActionCountWordPressRuleSet ? "yes" : "no"
     OverrideActionCountAmazonIpReputationListEnabled = var.enable_OverrideActionCountAmazonIpReputationList ? "yes" : "no"
     OverrideActionCountAnonymousIpListEnabled        = var.enable_OverrideActionCountAnonymousIpList ? "yes" : "no"
+    OverrideActionCountCoreRuleSetEnabled            = var.enable_OverrideActionCountCoreRuleSet ? "yes" : "no"
 
     CommonRuleSetExcludedRules          = var.CommonRuleSetExcludedRules != "" ? var.CommonRuleSetExcludedRules : null
     AdminProtectionRuleSetExcludedRules = var.AdminProtectionRuleSetExcludedRules != "" ? var.AdminProtectionRuleSetExcludedRules : null
@@ -47,6 +49,7 @@ resource "aws_cloudformation_stack" "waf" {
     WordPressRuleSetExcludedRules       = var.WordPressRuleSetExcludedRules != "" ? var.WordPressRuleSetExcludedRules : null
     AmazonIpReputationListExcludedRules = var.AmazonIpReputationListExcludedRules != "" ? var.AmazonIpReputationListExcludedRules : null
     RulesAnonymousIpListExcludedRules   = var.RulesAnonymousIpListExcludedRules != "" ? var.RulesAnonymousIpListExcludedRules : null
+    CoreRuleSetExcludedRules            = var.CoreRuleSetExcludedRules != "" ? var.CoreRuleSetExcludedRules : null
   }
 
   tags = var.tags
